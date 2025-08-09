@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReHumanizer Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        button { padding: 10px 20px; margin: 10px; }
+        textarea { width: 100%; height: 100px; }
+    </style>
+</head>
+<body>
+    <h1>ReHumanizer Debug</h1>
+    
+    <div>
+        <h3>Test Text Humanization</h3>
+        <textarea id="testText">I am an AI assistant with capabilities in mathematics, programming, data analysis, and machine learning.</textarea>
+        <br>
+        <button onclick="testAPI()">Test API</button>
+        <button onclick="testHealth()">Test Health</button>
+        <button onclick="testDemo()">Test Demo</button>
+    </div>
+    
+    <div id="result"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        function showResult(content, isError = false) {
+            const element = document.getElementById('result');
+            element.innerHTML = content;
+            element.className = isError ? 'error' : 'success';
+        }
+        
+        async function testHealth() {
+            try {
+                console.log('Testing health endpoint...');
+                const response = await fetch(`${API_BASE}/health`);
+                console.log('Health response:', response);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Health data:', data);
+                showResult(`<h3>Health Check Result:</h3><pre>${JSON.stringify(data, null, 2)}</pre>`);
+            } catch (error) {
+                console.error('Health check error:', error);
+                showResult(`<h3>Health Check Error:</h3><p>${error.message}</p>`, true);
+            }
+        }
+        
+        async function testDemo() {
+            try {
+                console.log('Testing demo endpoint...');
+                const response = await fetch(`${API_BASE}/api/humanize/demo`);
+                console.log('Demo response:', response);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Demo data:', data);
+                showResult(`<h3>Demo Result:</h3><pre>${JSON.stringify(data, null, 2)}</pre>`);
+            } catch (error) {
+                console.error('Demo error:', error);
+                showResult(`<h3>Demo Error:</h3><p>${error.message}</p>`, true);
+            }
+        }
+        
+        async function testAPI() {
+            const text = document.getElementById('testText').value.trim();
+            if (!text) {
+                showResult('<h3>Error:</h3><p>Please enter some text.</p>', true);
+                return;
+            }
+            
+            try {
+                console.log('Testing humanize endpoint...');
+                console.log('Request payload:', { text });
+                
+                const response = await fetch(`${API_BASE}/api/humanize/text`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text })
+                });
+                
+                console.log('Response:', response);
+                console.log('Response headers:', response.headers);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                showResult(`<h3>API Result:</h3><pre>${JSON.stringify(data, null, 2)}</pre>`);
+            } catch (error) {
+                console.error('API error:', error);
+                showResult(`<h3>API Error:</h3><p>${error.message}</p>`, true);
+            }
+        }
+        
+        // Auto-test health on load
+        window.onload = function() {
+            console.log('Page loaded, testing health...');
+            testHealth();
+        };
+    </script>
+</body>
+</html> 
