@@ -1,0 +1,12 @@
+{
+  "name": "rehumanizer-static",
+  "version": "1.0.0",
+  "description": "ReHumanizer - AI Text Humanization Static Frontend",
+  "scripts": {
+    "build": "echo 'No build step needed for static site'",
+    "start": "echo 'Static site ready'"
+  },
+  "keywords": ["ai", "humanization", "text", "static"],
+  "author": "ericytex",
+  "license": "MIT"
+} 
